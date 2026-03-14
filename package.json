@@ -6,16 +6,24 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "start:mock": "cross-env BLE_MOCK=true expo start --clear",
+    "android:mock": "cross-env BLE_MOCK=true expo start --android --clear",
+    "ios:mock": "cross-env BLE_MOCK=true expo start --ios --clear",
+    "ble:start": "ble-faker --port 58083",
+    "ble:stop": "ble-faker stop"
   },
   "dependencies": {
     "expo": "~55.0.6",
     "expo-status-bar": "~55.0.4",
     "react": "19.2.0",
-    "react-native": "0.83.2"
+    "react-native": "0.83.2",
+    "react-native-ble-plx": "^3.5.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "ble-faker": "^1.0.2",
+    "cross-env": "^10.1.0",
     "typescript": "~5.9.2"
   },
   "private": true
