@@ -16,10 +16,11 @@ const HEART_RATE_CHARACTERISTIC = '00002a37-0000-1000-8000-00805f9b34fb';
 const manager = new BleManager();
 
 export default function App() {
-  const [scanning, setScanning]   = useState(false);
-  const [devices, setDevices]     = useState<Device[]>([]);
-  const [connected, setConnected] = useState<Device | null>(null);
-  const [heartRate, setHeartRate] = useState<number | null>(null);
+  const [scanning, setScanning]               = useState(false);
+  const [devices, setDevices]                 = useState<Device[]>([]);
+  const [connected, setConnected]             = useState<Device | null>(null);
+  const [heartRate, setHeartRate]             = useState<number | null>(null);
+  const [lostConnection, setLostConnection]   = useState(false);
 
   const scan = () => {
     setDevices([]);
@@ -46,7 +47,13 @@ export default function App() {
       HEART_RATE_SERVICE,
       HEART_RATE_CHARACTERISTIC,
       (err, char) => {
-        if (err || !char?.value) return;
+        if (err) {
+          setConnected(null);
+          setHeartRate(null);
+          setLostConnection(true);
+          return;
+        }
+        if (!char?.value) return;
         const bytes = Uint8Array.from(atob(char.value), c => c.charCodeAt(0));
         const bpm = (bytes[0] & 0x01) === 0 ? bytes[1] : (bytes[1] << 8) + bytes[2];
         setHeartRate(bpm);
@@ -58,12 +65,22 @@ export default function App() {
     if (connected) manager.cancelDeviceConnection(connected.id);
     setConnected(null);
     setHeartRate(null);
+    setLostConnection(false);
     setDevices([]);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {!connected ? (
+      {lostConnection ? (
+        <View style={styles.center}>
+          <Text style={styles.lostIcon}>⚠️</Text>
+          <Text style={styles.title}>Connection Lost</Text>
+          <Text style={styles.subtitle}>The device disconnected unexpectedly.</Text>
+          <TouchableOpacity style={styles.button} onPress={disconnect}>
+            <Text style={styles.buttonText}>Back to scan</Text>
+          </TouchableOpacity>
+        </View>
+      ) : !connected ? (
         <View style={styles.center}>
           <Text style={styles.title}>Heart Rate Monitor</Text>
           <TouchableOpacity style={styles.button} onPress={scan} disabled={scanning}>
@@ -117,4 +134,6 @@ const styles = StyleSheet.create({
   bpmBox:           { alignItems: 'center', marginBottom: 48 },
   bpm:              { fontSize: 120, fontWeight: '700', color: '#e74c3c', lineHeight: 130 },
   bpmLabel:         { fontSize: 20, color: '#888', letterSpacing: 4 },
+  lostIcon:         { fontSize: 64, marginBottom: 16 },
+  subtitle:         { fontSize: 16, color: '#aaa', textAlign: 'center', marginBottom: 32 },
 });
