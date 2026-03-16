@@ -48,8 +48,10 @@ jobs:
           injection = (
               "  installer.pods_project.targets.each do |target|\n"
               "    target.build_configurations.each do |config|\n"
-              "      config.build_settings['SWIFT_VERSION'] = '6.0'\n"
               "      config.build_settings['SWIFT_STRICT_CONCURRENCY'] = 'minimal'\n"
+              "      if target.name == 'ExpoModulesCore'\n"
+              "        config.build_settings['SWIFT_VERSION'] = '6.0'\n"
+              "      end\n"
               "    end\n"
               "  end\n"
           )
