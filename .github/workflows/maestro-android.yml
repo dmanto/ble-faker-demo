@@ -50,7 +50,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           script: |
-            cross-env BLE_MOCK=true npx expo run:android --no-install &
+            npx cross-env BLE_MOCK=true npx expo run:android --no-install &
             sleep 60
             maestro test .maestro/
 

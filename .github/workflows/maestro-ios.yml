@@ -38,7 +38,7 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
 
       - name: Build and install app (BLE mock enabled)
-        run: cross-env BLE_MOCK=true npx expo run:ios --no-install
+        run: npx cross-env BLE_MOCK=true npx expo run:ios --no-install
         timeout-minutes: 20
 
       - name: Run Maestro flows
