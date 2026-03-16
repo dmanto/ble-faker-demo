@@ -50,12 +50,19 @@ jobs:
           arch: x86_64
           profile: pixel_6
           script: |
-            npx cross-env BLE_MOCK=true npx expo run:android &
+            cat > /tmp/run_tests.sh << 'EOF'
+            #!/bin/bash
+            set -e
             timeout 600 bash -c 'until adb shell pm list packages | grep -q blefakerdemo; do sleep 10; done'
             timeout 120 bash -c 'until nc -z localhost 8081; do sleep 5; done'
             adb reverse tcp:8081 tcp:8081
             adb reverse tcp:58083 tcp:58083
             maestro test .maestro/
+            EOF
+            chmod +x /tmp/run_tests.sh
+            npx --yes concurrently --kill-others --success first \
+              "npx cross-env BLE_MOCK=true npx expo run:android" \
+              "/tmp/run_tests.sh"
 
       - name: Upload Maestro logs on failure
         if: failure()
