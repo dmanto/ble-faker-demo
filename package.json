@@ -11,7 +11,8 @@
     "android:mock": "cross-env BLE_MOCK=true expo start --android --clear",
     "ios:mock": "cross-env BLE_MOCK=true expo start --ios --clear",
     "ble:start": "ble-faker --port 58083",
-    "ble:stop": "ble-faker stop"
+    "ble:stop": "ble-faker stop",
+    "test:e2e": "maestro test .maestro/"
   },
   "dependencies": {
     "expo": "~55.0.6",

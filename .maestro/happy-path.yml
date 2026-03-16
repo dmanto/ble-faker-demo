@@ -1,0 +1,25 @@
+appId: com.dmanto.blefakerdemo
+---
+- launchApp
+- assertVisible:
+    text: "Heart Rate Monitor"
+    timeout: 10000
+
+# Scan
+- tapOn:
+    id: "scan-button"
+- assertVisible:
+    text: "CorSense"
+    timeout: 10000
+
+# Connect
+- tapOn: "CorSense"
+- assertVisible:
+    id: "bpm-value"
+    timeout: 10000
+- assertVisible: "BPM"
+
+# BPM is a number in [45, 180]
+- assertVisible:
+    text: ".*"
+    id: "bpm-value"

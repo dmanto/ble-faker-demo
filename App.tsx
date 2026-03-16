@@ -76,14 +76,14 @@ export default function App() {
           <Text style={styles.lostIcon}>⚠️</Text>
           <Text style={styles.title}>Connection Lost</Text>
           <Text style={styles.subtitle}>The device disconnected unexpectedly.</Text>
-          <TouchableOpacity style={styles.button} onPress={disconnect}>
+          <TouchableOpacity testID="back-to-scan" style={styles.button} onPress={disconnect}>
             <Text style={styles.buttonText}>Back to scan</Text>
           </TouchableOpacity>
         </View>
       ) : !connected ? (
         <View style={styles.center}>
           <Text style={styles.title}>Heart Rate Monitor</Text>
-          <TouchableOpacity style={styles.button} onPress={scan} disabled={scanning}>
+          <TouchableOpacity testID="scan-button" style={styles.button} onPress={scan} disabled={scanning}>
             {scanning
               ? <ActivityIndicator color="#fff" />
               : <Text style={styles.buttonText}>Scan for devices</Text>}
@@ -105,11 +105,11 @@ export default function App() {
           <Text style={styles.title}>{connected.name}</Text>
           <View style={styles.bpmBox}>
             {heartRate !== null
-              ? <Text style={styles.bpm}>{heartRate}</Text>
+              ? <Text testID="bpm-value" style={styles.bpm}>{heartRate}</Text>
               : <ActivityIndicator size="large" color="#e74c3c" />}
             <Text style={styles.bpmLabel}>BPM</Text>
           </View>
-          <TouchableOpacity style={[styles.button, styles.disconnectButton]} onPress={disconnect}>
+          <TouchableOpacity testID="disconnect-button" style={[styles.button, styles.disconnectButton]} onPress={disconnect}>
             <Text style={styles.buttonText}>Disconnect</Text>
           </TouchableOpacity>
         </View>

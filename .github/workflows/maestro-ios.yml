@@ -1,0 +1,53 @@
+name: Maestro (iOS)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+
+      - name: Add Maestro to PATH
+        run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Start ble-faker
+        run: npx ble-faker --port 58083 &
+
+      - name: Boot iOS simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json \
+            | jq -r '.devices | to_entries[] | .value[] | select(.name | test("iPhone 1[56]")) | .udid' \
+            | head -1)
+          echo "Booting simulator $UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Build and install app (BLE mock enabled)
+        run: cross-env BLE_MOCK=true npx expo run:ios --no-install
+        timeout-minutes: 20
+
+      - name: Run Maestro flows
+        run: maestro test .maestro/
+        timeout-minutes: 5
+
+      - name: Upload Maestro logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-logs-ios
+          path: ~/.maestro/tests/
