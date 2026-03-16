@@ -1,25 +1,24 @@
 appId: com.dmanto.blefakerdemo
 ---
 - launchApp
-- assertVisible:
-    text: "Heart Rate Monitor"
+- extendedWaitUntil:
+    visible: "Heart Rate Monitor"
     timeout: 10000
 
 # Scan and connect
 - tapOn:
     id: "scan-button"
-- assertVisible:
-    text: "CorSense"
+- extendedWaitUntil:
+    visible: "CorSense"
     timeout: 10000
 - tapOn: "CorSense"
-- assertVisible:
-    id: "bpm-value"
+- extendedWaitUntil:
+    visible:
+      id: "bpm-value"
     timeout: 10000
 
 # Disconnect via button
 - tapOn:
     id: "disconnect-button"
-- assertVisible:
-    text: "Heart Rate Monitor"
-    timeout: 5000
+- assertVisible: "Heart Rate Monitor"
 - assertVisible: "Scan for devices"
