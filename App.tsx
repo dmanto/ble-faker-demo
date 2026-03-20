@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { BleManager, Device } from 'react-native-ble-plx';
 
 const HEART_RATE_SERVICE        = '0000180d-0000-1000-8000-00805f9b34fb';
@@ -21,8 +21,17 @@ export default function App() {
   const [connected, setConnected]             = useState<Device | null>(null);
   const [heartRate, setHeartRate]             = useState<number | null>(null);
   const [lostConnection, setLostConnection]   = useState(false);
+  const scanTimerRef                          = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (scanTimerRef.current) clearTimeout(scanTimerRef.current);
+      manager.stopDeviceScan();
+    };
+  }, []);
 
   const scan = () => {
+    if (scanTimerRef.current) clearTimeout(scanTimerRef.current);
     setDevices([]);
     setScanning(true);
     manager.startDeviceScan(null, null, (error, device) => {
@@ -33,7 +42,7 @@ export default function App() {
         );
       }
     });
-    setTimeout(() => { manager.stopDeviceScan(); setScanning(false); }, 5000);
+    scanTimerRef.current = setTimeout(() => { manager.stopDeviceScan(); setScanning(false); }, 5000);
   };
 
   const connect = async (device: Device) => {
@@ -70,6 +79,7 @@ export default function App() {
   };
 
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.container}>
       {lostConnection ? (
         <View style={styles.center}>
@@ -115,6 +125,7 @@ export default function App() {
         </View>
       )}
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

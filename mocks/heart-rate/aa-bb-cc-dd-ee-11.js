@@ -32,6 +32,7 @@ export default function (state, event) {
 
   if (event.kind === 'disconnect') {
     console.log('App disconnected');
+    return [];
   }
 
   if (event.kind === 'tick') {
